@@ -1,5 +1,5 @@
 ---
-stepsCompleted: [1, 2, 3, 4]
+stepsCompleted: [1, 2, 3, 4, 5, 6, 7]
 inputDocuments: []
 documentCounts:
   briefs: 0
@@ -7,7 +7,7 @@ documentCounts:
   brainstorming: 0
   projectDocs: 0
 workflowType: 'prd'
-lastStep: 4
+lastStep: 7
 project_name: 'laboiteagants_cahier des charges'
 user_name: 'Quentin'
 date: '2026-01-06'
@@ -899,3 +899,209 @@ Ces 6 journeys révèlent les capacités fonctionnelles nécessaires pour que Fl
 - Gestion TVA automatique (LemonSqueezy)
 - Historique factures téléchargeable
 - Essai gratuit 14 jours avec CB obligatoire
+
+## SaaS B2B Specific Requirements
+
+### Multi-Tenant Architecture
+
+**Isolation des données par entreprise cliente** :
+- Architecture multi-tenant stricte : chaque entreprise (tenant) ne voit QUE ses propres données
+- Isolation au niveau base de données : Colonne `company_id` sur toutes les entités (véhicules, documents, utilisateurs, alertes)
+- Requêtes systématiquement filtrées par `company_id` pour garantir zéro fuite de données entre clients
+- Exemple concret :
+  - Entreprise Transport Dupont (company_id=1) → voit uniquement ses 50 véhicules
+  - Entreprise BTP Martin (company_id=2) → voit uniquement ses 30 véhicules
+  - Aucun croisement possible entre tenants
+
+**Facturation usage-based (pas de quotas fixes)** :
+- Pas de limite arbitraire de véhicules par entreprise (illimité)
+- Facturation mensuelle basée sur l'usage réel : nombre exact de véhicules moteurs + remorques déclarés
+- LemonSqueezy Usage-Based Billing : compteur en temps réel du nombre de véhicules actifs par tenant
+- Calcul automatique fin de mois : (X moteurs × tarif tier correspondant) + (Y remorques × 1,50€) + add-ons activés
+- Ajout/suppression véhicule → recalcul automatique de la facture suivante (pas de prorata immédiat pour MVP)
+
+### Permission Model (RBAC - Role-Based Access Control)
+
+**5 rôles système définis** :
+
+**1. Super Admin (Quentin - hors tenant)** :
+- Accès global cross-tenant pour gestion plateforme
+- Dashboard analytics (MRR, churn, ARPU, NPS, clients à risque)
+- Gestion multi-clients avec filtres avancés
+- Mode démo pour présentations commerciales
+- Event tracking et funnel activation
+- Pas de compte "Super Admin" accessible aux clients (rôle système réservé)
+
+**2. Admin (niveau entreprise)** :
+- Full access sur son entreprise uniquement (tenant isolé)
+- Gérer utilisateurs (créer/modifier/supprimer comptes Admin, Gestionnaire, Chauffeur, Tiers)
+- Gérer abonnement et paiement (LemonSqueezy billing portal)
+- Modifier paramètres entreprise (nom, adresse, logo, configuration alertes globales)
+- Accès complet à tous les véhicules et documents de l'entreprise
+- Dashboard conformité global de la flotte
+
+**3. Gestionnaire (niveau opérationnel)** :
+- CRUD véhicules et documents
+- Import CSV en masse
+- Export registres de conformité
+- Vue dashboard conformité flotte
+- Paramétrer alertes pour véhicules spécifiques
+- **NE PEUT PAS** : Modifier abonnement, créer/supprimer utilisateurs, accéder aux paramètres entreprise
+
+**4. Chauffeur (niveau mobile)** :
+- Scanner documents (mobile PWA)
+- **Voir uniquement les véhicules qui lui sont assignés** (pas toute la flotte pour éviter surcharge UX)
+- Consultation documents et infos du véhicule assigné (carte grise, assurance, CT, permis, visite médicale)
+- Recevoir notifications push pour alertes échéances sur ses véhicules
+- **NE PEUT PAS** : Voir les autres véhicules, modifier configuration, accéder dashboard gestionnaire
+
+**5. Tiers - Comptable/Auditeur (lecture seule externe)** :
+- Accès en lecture seule cross-client pour comptables (1 compte Julien = vue sur N entreprises clientes)
+- Export registres conformité (PDF, Excel)
+- Consultation documents et véhicules (pas de modification)
+- Traçabilité accès : audit log enregistre qui a consulté quoi, quand
+- Permissions granulaires configurables par Admin (ex: accès uniquement docs conducteurs, pas véhicules)
+
+**Matrice de permissions RBAC** :
+
+| Fonctionnalité | Super Admin | Admin | Gestionnaire | Chauffeur | Tiers |
+|----------------|-------------|-------|--------------|-----------|-------|
+| Dashboard analytics global | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Gestion multi-clients | ✅ | ❌ | ❌ | ❌ | ✅ (lecture) |
+| Gérer utilisateurs | ✅ | ✅ | ❌ | ❌ | ❌ |
+| Gérer abonnement | ✅ | ✅ | ❌ | ❌ | ❌ |
+| CRUD véhicules | ✅ | ✅ | ✅ | ❌ | ❌ |
+| Scanner documents | ✅ | ✅ | ✅ | ✅ | ❌ |
+| Export registres | ✅ | ✅ | ✅ | ❌ | ✅ |
+| Vue tous véhicules flotte | ✅ | ✅ | ✅ | ❌ | ✅ (selon permissions) |
+| Vue véhicules assignés | ✅ | ✅ | ✅ | ✅ | ❌ |
+| Paramètres entreprise | ✅ | ✅ | ❌ | ❌ | ❌ |
+
+### Subscription Tiers & Billing Implementation
+
+**Modèle de facturation usage-based avec LemonSqueezy** :
+
+**Tarification dynamique implémentée via LemonSqueezy Usage-Based Billing** :
+- Utilisation du système de compteurs LemonSqueezy pour tracking en temps réel
+- 2 compteurs séparés par tenant :
+  - `vehicle_motors_count` : Nombre de véhicules moteurs actifs (camions, VUL, voitures, engins)
+  - `vehicle_trailers_count` : Nombre de remorques actives
+- Calcul pricing tier automatique selon le nombre de moteurs :
+  - 1-25 moteurs : 4€/moteur/mois
+  - 26-100 moteurs : 3€/moteur/mois
+  - 101+ moteurs : 2,50€/moteur/mois
+- Remorques : prix fixe 1,50€/remorque/mois (pas de dégressivité)
+- Facture mensuelle calculée automatiquement par LemonSqueezy : `(Σ moteurs × tarif tier) + (Σ remorques × 1,50€) + add-ons`
+
+**Gestion des add-ons** :
+- **OCR automatique** : 0,10€/document scanné (pay-as-you-go)
+  - Compteur LemonSqueezy `ocr_scans_count` incrémenté à chaque scan validé
+  - Facturé mensuellement, ligne séparée sur facture
+- **Alertes SMS** : 0,50€/véhicule/mois activé (forfait 4 SMS inclus)
+  - Activation/désactivation self-service par Admin depuis dashboard paramètres
+  - Custom développement : Toggle "Activer SMS pour cette flotte" → appel API LemonSqueezy pour ajouter/retirer add-on
+- **API Verbalisation ANTAI** : 1€/véhicule/mois (P1 - post-MVP)
+  - Activation self-service identique à SMS
+
+**Gestion TVA automatique** :
+- LemonSqueezy gère automatiquement la TVA française (20%) et européenne (reverse charge B2B)
+- Facturation conforme pour clients professionnels (numéro SIRET requis à l'inscription)
+
+**Essai gratuit 14 jours avec CB obligatoire** :
+- Carte bancaire requise à l'inscription (améliore conversion bêta → payant de 30% à 70%)
+- Aucun débit pendant 14 jours
+- Auto-renouvellement à J-14 avec email de rappel à J-7
+- Politique d'annulation : annulation self-service jusqu'à la fin de la période d'essai
+
+**Facturation récurrente mensuelle** :
+- Calcul fin de mois : comptage véhicules actifs au dernier jour du mois
+- Ajout/suppression véhicule en cours de mois → pris en compte facture suivante (pas de prorata pour MVP)
+- Historique factures téléchargeable en PDF depuis dashboard Admin (requis pour comptabilité)
+
+### Integration Strategy
+
+**Pour MVP (P0)** :
+- ✅ **Pas d'intégrations tierces prioritaires** (focus sur core product)
+- ✅ LemonSqueezy (paiement) et OVH SMS (alertes) sont les seules dépendances externes
+
+**Post-MVP (P1)** :
+- API ANTAI (verbalisations automatiques)
+- Webhooks sortants pour événements FlotteBox (document expiré, alerte déclenchée)
+- Export API JSON/XML pour intégration ERP clients
+
+**Vision (P2)** :
+- API publique REST documentée (OpenAPI/Swagger)
+- OAuth2 pour authentification tiers
+- Intégrations assureurs (import automatique attestations)
+- Intégrations garagistes (rappels entretien, import factures)
+- SDK JavaScript/Python pour développeurs tiers
+
+### Compliance & Security Requirements
+
+**RGPD & Hébergement France (P0 - MVP)** :
+- ✅ Hébergement base de données PostgreSQL en France (Scaleway ou OVH Cloud)
+- ✅ Hébergement fichiers (documents scannés) en France (Scaleway Object Storage ou OVH Object Storage)
+- ✅ Conformité RGPD dès le MVP (obligation légale)
+- ✅ Politique de confidentialité et CGU affichées avant inscription
+- ✅ Consentement explicite pour traitement données personnelles (chauffeurs, gestionnaires)
+- ✅ Droit d'accès, rectification, suppression (RGPD Article 15-17) : interface self-service Admin
+
+**Audit Logs & Traçabilité (P1 - post-MVP)** :
+- Table `audit_logs` pour traçabilité complète :
+  - Qui a consulté quel document, quand (requis pour audits URSSAF)
+  - Qui a modifié quel véhicule/document, quand
+  - Qui a ajouté/supprimé des utilisateurs
+  - Qui a exporté des registres de conformité
+- Retention audit logs : 3 ans minimum (conformité URSSAF)
+- Interface de consultation audit logs pour Admin (filtres par utilisateur, date, action)
+
+**2FA - Two-Factor Authentication (P1 - post-MVP)** :
+- **Obligatoire pour comptes Admin** (protection abonnement et données sensibles)
+- **Optionnel pour Gestionnaire** (recommandé mais pas forcé)
+- **Non disponible pour Chauffeur** (UX mobile simplifiée, pas critique sécurité)
+- Méthode 2FA : TOTP (Time-based One-Time Password) via app authenticator (Google Authenticator, Authy)
+- Gestion "appareils de confiance" : option "Se souvenir de cet appareil pendant 30 jours" pour éviter 2FA à chaque connexion
+- Recovery codes générés à l'activation 2FA (10 codes à usage unique en cas de perte téléphone)
+
+**Conservation légale 10 ans (P0 - MVP)** :
+- Documents réglementaires (cartes grises, assurances, CT, permis) : conservation obligatoire 10 ans
+- Soft delete : documents marqués `deleted_at` mais jamais supprimés physiquement de la BDD/storage
+- Interface Admin : "Archiver document" au lieu de "Supprimer" (masqué dans l'interface, conservé en base)
+- Coût storage Scaleway/OVH : ~0,01€/GB/mois → impact marginal (10 000 documents scannés ≈ 5GB ≈ 0,05€/mois)
+
+**Certifications futures (évaluation en bêta)** :
+- **ISO 27001** : Si >50% bêta-testeurs l'exigent → investir 15-25k€ à M3-M6
+- **SOC 2 Type II** : Pour grands comptes exigeants (M12-M24)
+- Audits sécurité annuels (P2)
+
+**SSO - Single Sign-On (P2 - Vision)** :
+- SAML 2.0 / OAuth2 pour grands comptes (>100 véhicules)
+- Intégration Azure AD, Google Workspace, Okta
+- Plan Enterprise sur-devis avec SSO inclus
+
+### Technical Architecture Considerations
+
+**Stack technique validée** :
+- Frontend : Next.js 16 + React 19 + TypeScript
+- Backend : Next.js API Routes (serverless) ou Node.js/Express si besoin serveur dédié
+- Base de données : PostgreSQL géré (Scaleway Database ou OVH Cloud Databases)
+- ORM : Prisma ou Drizzle (abstraction DB pour migration facile si besoin)
+- Storage : Scaleway Object Storage ou OVH Object Storage (S3-compatible)
+- Auth : NextAuth.js avec support multi-tenant (session stockée avec `company_id`)
+- Paiements : LemonSqueezy (usage-based billing, TVA automatique)
+- OCR : Mistral OCR 3 API ($2/1000 pages)
+- Emails : Resend
+- SMS : OVH SMS (0,035€/SMS)
+- Hosting : Vercel (frontend Next.js) + Scaleway/OVH (backend API si besoin)
+
+**Multi-tenancy PostgreSQL implementation** :
+- Approche Row-Level Security (RLS) avec colonne `company_id` sur toutes les tables
+- Index composite sur `(company_id, id)` pour performances
+- Middleware Next.js : extraction `company_id` depuis session utilisateur → injection automatique dans requêtes
+- Prévention fuite données : toutes les requêtes Prisma/Drizzle incluent `WHERE company_id = ?`
+
+**Scalabilité cible MVP** :
+- Support 100 clients actifs simultanés (objectif M12 : 40-50 clients)
+- Architecture serverless Vercel : scaling automatique selon charge
+- PostgreSQL géré : vertical scaling jusqu'à 100 clients (puis migration cluster si >100)
+- Monitoring proactif : alertes si temps réponse API > 2s ou charge DB > 70%
