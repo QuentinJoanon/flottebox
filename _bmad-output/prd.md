@@ -1,5 +1,5 @@
 ---
-stepsCompleted: [1, 2, 3, 4, 5, 6, 7]
+stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 inputDocuments: []
 documentCounts:
   briefs: 0
@@ -7,7 +7,7 @@ documentCounts:
   brainstorming: 0
   projectDocs: 0
 workflowType: 'prd'
-lastStep: 7
+lastStep: 10
 project_name: 'laboiteagants_cahier des charges'
 user_name: 'Quentin'
 date: '2026-01-06'
@@ -1194,3 +1194,137 @@ Ces 6 journeys révèlent les capacités fonctionnelles nécessaires pour que Fl
 - **FR58**: Super Admin can view feature adoption metrics (OCR usage, SMS add-on, etc.)
 - **FR59**: Super Admin can activate demo mode to generate realistic fake company data for sales presentations
 - **FR60**: Super Admin can track funnel activation and user engagement events
+
+## Non-Functional Requirements
+
+### Performance
+
+**Dashboard Loading & Responsiveness:**
+- **NFR-P1**: Dashboard de conformité (statuts vert/orange/rouge) doit se charger en moins de 2 secondes sur connexion 4G standard
+- **NFR-P2**: Calendrier des échéances (30 prochains jours) doit s'afficher en moins de 1,5 secondes
+- **NFR-P3**: Actions utilisateur (clic sur véhicule, filtrage, export) doivent recevoir un feedback visuel en moins de 300ms
+
+**OCR Processing Speed:**
+- **NFR-P4**: Traitement OCR d'un document scanné (extraction champs + pré-remplissage) doit s'effectuer en moins de 5 secondes
+- **NFR-P5**: Si traitement OCR dépasse 5 secondes, afficher indicateur de progression pour éviter frustration utilisateur
+- **NFR-P6**: Upload d'un document (mobile PWA → serveur) doit se compléter en moins de 3 secondes sur 4G standard
+
+**Offline Sync Performance:**
+- **NFR-P7**: Synchronisation automatique des documents scannés hors ligne doit débuter dans les 10 secondes suivant le retour réseau
+- **NFR-P8**: Synchronisation complète de tous documents offline doit se terminer en moins de 5 minutes (jusqu'à 20 documents)
+- **NFR-P9**: Interface doit afficher la progression de sync en temps réel (X/Y documents synchronisés)
+
+**API Response Times:**
+- **NFR-P10**: 95% des appels API backend doivent répondre en moins de 500ms (mesure P95)
+- **NFR-P11**: Aucun appel API ne doit dépasser 3 secondes (timeout serveur)
+
+### Security
+
+**RGPD & Data Privacy (MVP - P0):**
+- **NFR-S1**: Toutes les données personnelles (permis, visites médicales, cartes grises) doivent être hébergées en France (Scaleway/OVH)
+- **NFR-S2**: Consentement explicite RGPD obligatoire avant traitement de toute donnée personnelle
+- **NFR-S3**: Interface self-service pour droits RGPD (accès, rectification, suppression) accessible en moins de 3 clics depuis paramètres
+- **NFR-S4**: Suppression compte utilisateur (RGPD "droit à l'oubli") doit anonymiser toutes données personnelles en moins de 24h
+- **NFR-S5**: Politique de confidentialité et CGU doivent être affichées et acceptées avant création de compte
+
+**Encryption:**
+- **NFR-S6**: Toutes les communications client-serveur doivent utiliser HTTPS/TLS 1.3 minimum (encryption in transit)
+- **NFR-S7**: Documents stockés (Scaleway/OVH Object Storage) doivent être encryptés at rest (AES-256)
+- **NFR-S8**: Mots de passe utilisateurs doivent être hashés avec bcrypt (cost factor ≥12) ou Argon2
+
+**Multi-Tenant Isolation:**
+- **NFR-S9**: Aucune requête base de données ne doit pouvoir accéder à des données d'un autre tenant (0% fuite cross-tenant)
+- **NFR-S10**: Middleware Next.js doit systématiquement injecter `company_id` dans toutes les requêtes DB
+- **NFR-S11**: Tests de sécurité automatisés doivent valider l'isolation multi-tenant avant chaque déploiement production
+
+**Authentication & Session:**
+- **NFR-S12**: Sessions utilisateur doivent expirer après 7 jours d'inactivité (chauffeurs) et 24h (Admin/Gestionnaire)
+- **NFR-S13**: Limitation tentatives login : maximum 5 échecs avant blocage temporaire 15 minutes
+- **NFR-S14**: 2FA (P1) doit utiliser TOTP standard (RFC 6238) compatible Google Authenticator/Authy
+
+**Audit & Compliance (P1):**
+- **NFR-S15**: Tous les accès et modifications de documents doivent être tracés dans audit logs avec horodatage UTC
+- **NFR-S16**: Audit logs doivent être conservés 3 ans minimum (conformité URSSAF)
+- **NFR-S17**: Aucun utilisateur (même Super Admin) ne doit pouvoir modifier ou supprimer les audit logs
+
+### Scalability
+
+**Concurrent Users & Load:**
+- **NFR-SC1**: Système doit supporter 100 scans simultanés de chauffeurs sans dégradation de performance (< 10% augmentation temps réponse)
+- **NFR-SC2**: Dashboard doit rester fluide avec jusqu'à 50 gestionnaires connectés simultanément sur une même entreprise
+- **NFR-SC3**: Architecture serverless Vercel doit scaler automatiquement jusqu'à 500 requêtes/seconde
+
+**Growth Capacity:**
+- **NFR-SC4**: Système doit supporter une croissance de 0 à 200 clients actifs sans refactoring architectural majeur
+- **NFR-SC5**: Base de données PostgreSQL doit gérer jusqu'à 500 000 documents scannés avec performance constante (indexation optimisée)
+- **NFR-SC6**: Object Storage (documents) doit supporter croissance jusqu'à 5 TB sans limite pratique (Scaleway/OVH scaling illimité)
+
+**Peak Load Management:**
+- **NFR-SC7**: Système doit gérer des pics de charge 3x supérieurs à la moyenne (ex: fin de mois pour échéances CT) sans downtime
+- **NFR-SC8**: Si charge dépasse 80% capacité serveur, alertes automatiques doivent être envoyées pour scaling proactif
+
+### Reliability
+
+**Uptime & Availability:**
+- **NFR-R1**: Uptime cible de 99,5% mensuel (≈ 3,6h downtime maximum par mois)
+- **NFR-R2**: Maintenance planifiée doit être annoncée 48h à l'avance et limitée à 2h maximum
+- **NFR-R3**: En cas de downtime imprévu, restauration du service doit s'effectuer en moins de 4h (RTO - Recovery Time Objective)
+
+**Data Backup & Recovery:**
+- **NFR-R4**: Backup automatique quotidien de la base de données PostgreSQL (snapshot à 3h du matin UTC+1)
+- **NFR-R5**: Backups doivent être conservés 30 jours glissants (possibilité de restaurer jusqu'à J-30)
+- **NFR-R6**: Documents scannés (Object Storage) doivent avoir versioning activé pour récupération en cas de suppression accidentelle
+- **NFR-R7**: RPO (Recovery Point Objective) maximum de 24h : en cas de panne totale, perte de données max = dernières 24h
+
+**Offline Mode & Sync Resilience:**
+- **NFR-R8**: Application PWA chauffeur doit fonctionner 100% offline pour scan de documents (stockage local IndexedDB)
+- **NFR-R9**: Synchronisation doit gérer les conflits (ex: 2 chauffeurs scannent le même document offline) avec stratégie "last write wins"
+- **NFR-R10**: En cas d'échec de sync, système doit réessayer automatiquement toutes les 5 minutes jusqu'à succès (max 10 tentatives)
+
+**Error Handling & Monitoring:**
+- **NFR-R11**: Erreurs critiques (paiement échoué, OCR failed, sync impossible) doivent déclencher alertes email admin en temps réel
+- **NFR-R12**: Monitoring proactif (Vercel Analytics + Sentry) doit détecter dégradations performance avant impact utilisateur
+- **NFR-R13**: Taux d'erreur API doit rester < 1% (99% de requêtes réussies)
+
+### Usability
+
+**Mobile PWA Experience:**
+- **NFR-U1**: Installation PWA via QR code doit se compléter en moins de 1 minute (conforme FR37)
+- **NFR-U2**: Interface mobile doit être optimisée pour utilisation une main (boutons accessibles pouce, zones touch 44x44px minimum)
+- **NFR-U3**: Premier scan chauffeur doit être guidé par tooltips contextuels (max 3 étapes, validation visuelle immédiate)
+
+**Browser & Device Support:**
+- **NFR-U4**: PWA chauffeur doit fonctionner sur iOS 12+ (Safari) et Android 8+ (Chrome)
+- **NFR-U5**: Dashboard gestionnaire doit supporter Chrome 90+, Firefox 88+, Safari 14+, Edge 90+
+- **NFR-U6**: Application doit être responsive et utilisable sur écrans de 320px (iPhone SE) à 2560px (desktop 27")
+
+**Onboarding & Learning Curve:**
+- **NFR-U7**: Nouveau chauffeur doit pouvoir scanner son premier document sans formation préalable (guidage intuitif)
+- **NFR-U8**: Gestionnaire doit pouvoir importer sa première flotte (CSV) en moins de 15 minutes (conforme User Journey Marie)
+- **NFR-U9**: Vidéo tutoriel chauffeur doit durer maximum 90 secondes (conforme FR38)
+
+**Language & Localization:**
+- **NFR-U10**: Interface doit être 100% en français pour MVP (langue cible PME/ETI France)
+- **NFR-U11**: Dates doivent être affichées au format français (jj/mm/aaaa)
+- **NFR-U12**: Montants doivent être affichés en euros (€) avec virgule décimale française (ex: 265,00€)
+
+### Accessibility
+
+**WCAG 2.1 AA Compliance:**
+- **NFR-A1**: Application doit être conforme WCAG 2.1 niveau AA (standard légal EU) pour dashboard gestionnaire
+- **NFR-A2**: Contraste texte/fond doit respecter ratio minimum 4.5:1 (texte normal) et 3:1 (texte large)
+- **NFR-A3**: Navigation clavier complète : toutes les fonctionnalités doivent être accessibles sans souris (tab, enter, espace)
+
+**Screen Reader Support:**
+- **NFR-A4**: Statuts conformité (vert/orange/rouge) doivent avoir labels textuels alternatifs pour lecteurs d'écran (ex: "Conforme", "Attention", "Critique")
+- **NFR-A5**: Formulaires doivent avoir labels explicites et messages d'erreur descriptifs (pas juste "Erreur")
+- **NFR-A6**: Images et icônes doivent avoir attributs alt textuels pertinents
+
+**Age & Tech Literacy Considerations:**
+- **NFR-A7**: Taille de police minimum 14px sur mobile, 16px sur desktop (lisibilité chauffeurs 50+ ans)
+- **NFR-A8**: Boutons d'action principaux (Scanner, Valider) doivent avoir taille minimum 48x48px (facilité touch pour utilisateurs peu tech)
+- **NFR-A9**: Messages d'erreur doivent être rédigés en langage simple, non technique (ex: "Ce document n'est pas lisible" au lieu de "OCR parsing failed")
+
+**Responsive & Visual Clarity:**
+- **NFR-A10**: Dashboard conformité doit utiliser couleurs standardisées (vert = ok, orange = attention, rouge = critique) pour reconnaissance universelle
+- **NFR-A11**: Interface doit éviter dépendance exclusive à la couleur pour transmettre information (ajouter icônes/texte)
