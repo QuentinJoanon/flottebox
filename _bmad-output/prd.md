@@ -1,5 +1,5 @@
 ---
-stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
 inputDocuments: []
 documentCounts:
   briefs: 0
@@ -7,8 +7,10 @@ documentCounts:
   brainstorming: 0
   projectDocs: 0
 workflowType: 'prd'
-lastStep: 10
-project_name: 'laboiteagants_cahier des charges'
+lastStep: 11
+workflowStatus: 'complete'
+completionDate: '2026-01-07'
+project_name: 'FlotteBox'
 user_name: 'Quentin'
 date: '2026-01-06'
 ---
