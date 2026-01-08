@@ -1112,90 +1112,96 @@ Ces 6 journeys révèlent les capacités fonctionnelles nécessaires pour que Fl
 
 ### 1. User Management & Authentication
 
-- **FR1**: Users can create an account with email/password or OAuth Google
+- **FR1**: Users can create an account with email/password or OAuth Google (Admin, Gestionnaire, Tiers roles)
 - **FR2**: Companies can require credit card during 14-day free trial registration
-- **FR3**: Admins can create, modify, and delete user accounts (Admin, Gestionnaire, Chauffeur, Tiers roles)
-- **FR4**: Admins can assign roles and permissions to users within their company
-- **FR5**: Admins can configure 2FA (Two-Factor Authentication) for their account with trusted device management
-- **FR6**: Companies can grant read-only access to external third parties (comptables, auditeurs) with granular permissions
-- **FR7**: Comptables can access multiple client companies with a single account
+- **FR3**: Gestionnaires can create chauffeur accounts with custom identifier (username), password, name, first name, and phone number (email optional)
+- **FR4**: Gestionnaires can create, modify, and delete user accounts (Admin, Gestionnaire, Chauffeur, Tiers roles) within their company
+- **FR5**: Chauffeurs authenticate using custom identifier + password (no email required)
+- **FR6**: Chauffeurs cannot modify their own account information (read-only access to their profile)
+- **FR7**: Gestionnaires can deactivate or delete chauffeur accounts at any time (disposable accounts for turnover management)
+- **FR8**: Admins can configure 2FA (Two-Factor Authentication) for their account with trusted device management
+- **FR9**: Companies can grant read-only access to external third parties (comptables, auditeurs) with granular permissions
+- **FR10**: Comptables can access multiple client companies with a single account
 
 ### 2. Fleet & Vehicle Management
 
-- **FR8**: Gestionnaires can add vehicles with distinction between motors (camions, VUL, voitures, engins) and trailers (remorques)
-- **FR9**: Gestionnaires can import vehicles in bulk via CSV file with duplicate detection
-- **FR10**: Gestionnaires can assign chauffeurs to specific vehicles
-- **FR11**: Gestionnaires can edit and delete vehicles
-- **FR12**: Chauffeurs can view vehicle information and documents for vehicles assigned to them
-- **FR13**: System can automatically count active motors and trailers per company for billing
+- **FR11**: Gestionnaires can add vehicles with distinction between motors (camions, VUL, voitures, engins) and trailers (remorques)
+- **FR12**: Gestionnaires can import vehicles in bulk via CSV file with duplicate detection
+- **FR13**: Gestionnaires can assign chauffeurs to specific vehicles
+- **FR14**: Gestionnaires can edit and delete vehicles
+- **FR15**: Chauffeurs can view vehicle information and documents for vehicles assigned to them
+- **FR16**: System can automatically count active motors and trailers per company for billing
 
 ### 3. Document Management & OCR
 
-- **FR14**: Gestionnaires can upload documents via drag-and-drop (desktop) or camera scan (mobile PWA)
-- **FR15**: Chauffeurs can scan documents using mobile PWA in less than 30 seconds
-- **FR16**: System can perform OCR-assisted extraction to pre-fill document fields (immatriculation, dates, type) with >90% precision
-- **FR17**: Users must validate OCR-extracted data before document creation (mandatory human validation)
-- **FR18**: System can classify document types automatically (carte grise, assurance, CT, permis, visite médicale, FIMO)
-- **FR19**: System can mark illegible documents as "à vérifier" and notify gestionnaire
-- **FR20**: Chauffeurs can scan documents offline and system syncs automatically when network returns
-- **FR21**: System can archive documents (soft delete) instead of permanent deletion for 10-year legal retention
-- **FR22**: Gestionnaires can import documents in bulk via ZIP with OCR matching to vehicles
+- **FR17**: Gestionnaires can upload documents via drag-and-drop (desktop) or camera scan (mobile PWA)
+- **FR18**: Chauffeurs can scan documents using mobile PWA in less than 30 seconds
+- **FR19**: System can perform OCR-assisted extraction to pre-fill document fields (immatriculation, dates, type) with >90% precision
+- **FR20**: Users must validate OCR-extracted data before document creation (mandatory human validation)
+- **FR21**: System can classify document types automatically (carte grise, assurance, CT, permis, visite médicale, FIMO)
+- **FR22**: System can mark illegible documents as "à vérifier" and notify gestionnaire
+- **FR23**: Chauffeurs can scan documents offline and system syncs automatically when network returns
+- **FR24**: System can archive documents (soft delete) instead of permanent deletion for 10-year legal retention
+- **FR25**: Gestionnaires can import documents in bulk via ZIP with OCR matching to vehicles
 
 ### 4. Alerts & Notifications
 
-- **FR23**: System can calculate expiration deadlines automatically and trigger alerts at 60 days, 30 days, 15 days, and expiration
-- **FR24**: Users can receive email notifications (daily/weekly summaries) for upcoming expirations
-- **FR25**: Users can receive push notifications via PWA for critical alerts
-- **FR26**: Companies can activate SMS alerts add-on (0,50€/vehicle/month) with self-service toggle
-- **FR27**: Gestionnaires can customize alert frequency and types per vehicle
-- **FR28**: System can send automatic reminders to gestionnaires if chauffeur hasn't scanned in 30 days
+- **FR26**: System can calculate expiration deadlines automatically and trigger alerts at 60 days, 30 days, 15 days, and expiration
+- **FR27**: Users can receive email notifications (daily/weekly summaries) for upcoming expirations
+- **FR28**: Users can receive push notifications via PWA for critical alerts
+- **FR29**: Companies can activate SMS alerts add-on (0,50€/vehicle/month) with self-service toggle
+- **FR30**: Chauffeurs can receive SMS alerts on their registered phone number if SMS add-on is activated
+- **FR31**: Gestionnaires can customize alert frequency and types per vehicle
+- **FR32**: System can send automatic reminders to gestionnaires if chauffeur hasn't scanned in 30 days
 
 ### 5. Dashboard & Reporting
 
-- **FR29**: Gestionnaires can view real-time fleet compliance dashboard with visual status (vert/orange/rouge)
-- **FR30**: Dirigeants can view upcoming deadlines calendar for next 30 days
-- **FR31**: Gestionnaires can view chauffeur adoption metrics (% having scanned ≥1 document/month)
-- **FR32**: Gestionnaires can export "Registre de conformité conducteurs" (permis, visites médicales, FIMO) as PDF for URSSAF audits
-- **FR33**: Gestionnaires can export "Registre de conformité véhicules" (cartes grises, assurances, CT) as PDF/Excel
-- **FR34**: Users can select custom date periods for compliance exports (e.g., last 3 years)
-- **FR35**: Tiers (comptables) can export compliance registers for their client companies
+- **FR33**: Gestionnaires can view real-time fleet compliance dashboard with visual status (vert/orange/rouge)
+- **FR34**: Dirigeants can view upcoming deadlines calendar for next 30 days
+- **FR35**: Gestionnaires can view chauffeur adoption metrics (% having scanned ≥1 document/month)
+- **FR36**: Gestionnaires can export "Registre de conformité conducteurs" (permis, visites médicales, FIMO) as PDF for URSSAF audits
+- **FR37**: Gestionnaires can export "Registre de conformité véhicules" (cartes grises, assurances, CT) as PDF/Excel
+- **FR38**: Users can select custom date periods for compliance exports (e.g., last 3 years)
+- **FR39**: Tiers (comptables) can export compliance registers for their client companies
 
 ### 6. Onboarding & Driver Adoption
 
-- **FR36**: Gestionnaires can generate QR code for PWA installation to share with chauffeurs
-- **FR37**: Chauffeurs can install PWA in under 1 minute by scanning QR code
-- **FR38**: System can send 90-second tutorial video via SMS to new chauffeurs
-- **FR39**: System can guide chauffeurs through first scan with tooltips and step-by-step validation
-- **FR40**: System can activate gamification (badges, leaderboard) automatically if company >10 users OR >5 scans/month
-- **FR41**: Chauffeurs can earn "Chauffeur exemplaire" badge for consistent document scanning
+- **FR40**: Gestionnaires can generate QR code for PWA installation to share with chauffeurs
+- **FR41**: Gestionnaires can send onboarding SMS to chauffeur with login credentials (identifier + password) and PWA installation link
+- **FR42**: Chauffeurs can install PWA in under 1 minute by scanning QR code
+- **FR43**: System can send 90-second tutorial video via SMS to new chauffeurs
+- **FR44**: System can guide chauffeurs through first scan with tooltips and step-by-step validation
+- **FR45**: System can activate gamification (badges, leaderboard) automatically if company >10 users OR >5 scans/month
+- **FR46**: Chauffeurs can earn "Chauffeur exemplaire" badge for consistent document scanning
 
 ### 7. Billing & Subscription Management
 
-- **FR42**: System can calculate monthly billing using usage-based pricing (motors × tier rate + trailers × 1,50€)
-- **FR43**: System can apply tiered pricing for motors (1-25: 4€, 26-100: 3€, 101+: 2,50€)
-- **FR44**: System can charge OCR add-on at 0,10€/document scanned (pay-as-you-go)
-- **FR45**: System can handle TVA automatically for French and European B2B invoicing
-- **FR46**: Admins can activate/deactivate add-ons (SMS, API ANTAI) via self-service dashboard
-- **FR47**: Admins can download monthly invoices as PDF from billing portal
-- **FR48**: System can auto-renew subscriptions with email reminder at J-7 before charge
-- **FR49**: Admins can cancel subscription self-service before end of free trial
+- **FR47**: System can calculate monthly billing using usage-based pricing (motors × tier rate + trailers × 1,50€)
+- **FR48**: System can apply tiered pricing for motors (1-25: 4€, 26-100: 3€, 101+: 2,50€)
+- **FR49**: System can charge OCR add-on at 0,10€/document scanned (pay-as-you-go)
+- **FR50**: System can handle TVA automatically for French and European B2B invoicing
+- **FR51**: Admins can activate/deactivate add-ons (SMS, API ANTAI) via self-service dashboard
+- **FR52**: Admins can download monthly invoices as PDF from billing portal
+- **FR53**: System can auto-renew subscriptions with email reminder at J-7 before charge
+- **FR54**: Admins can cancel subscription self-service before end of free trial
 
 ### 8. Compliance & Security
 
-- **FR50**: System can isolate data by company (multi-tenant) with no cross-tenant data leakage
-- **FR51**: System can log all access and modifications to documents for audit trail (P1)
-- **FR52**: Admins can view audit logs filtered by user, date, and action (P1)
-- **FR53**: System can retain audit logs for minimum 3 years for URSSAF compliance (P1)
-- **FR54**: System can enforce RGPD data privacy with user consent management
-- **FR55**: Users can exercise RGPD rights (access, rectification, deletion) via self-service interface
+- **FR55**: System can isolate data by company (multi-tenant) with no cross-tenant data leakage
+- **FR56**: System can log all access and modifications to documents for audit trail (P1)
+- **FR57**: Admins can view audit logs filtered by user, date, and action (P1)
+- **FR58**: System can retain audit logs for minimum 3 years for URSSAF compliance (P1)
+- **FR59**: System can enforce RGPD data privacy with user consent management
+- **FR60**: Users can exercise RGPD rights (access, rectification, deletion) via self-service interface
+- **FR61**: Gestionnaires can manage RGPD requests for chauffeur accounts (chauffeurs cannot self-manage)
 
 ### 9. Super Admin & Analytics
 
-- **FR56**: Super Admin (Quentin) can view global analytics dashboard (MRR, churn, ARPU, NPS)
-- **FR57**: Super Admin can identify at-risk clients with health score <40/100
-- **FR58**: Super Admin can view feature adoption metrics (OCR usage, SMS add-on, etc.)
-- **FR59**: Super Admin can activate demo mode to generate realistic fake company data for sales presentations
-- **FR60**: Super Admin can track funnel activation and user engagement events
+- **FR62**: Super Admin (Quentin) can view global analytics dashboard (MRR, churn, ARPU, NPS)
+- **FR63**: Super Admin can identify at-risk clients with health score <40/100
+- **FR64**: Super Admin can view feature adoption metrics (OCR usage, SMS add-on, etc.)
+- **FR65**: Super Admin can activate demo mode to generate realistic fake company data for sales presentations
+- **FR66**: Super Admin can track funnel activation and user engagement events
 
 ## Non-Functional Requirements
 
