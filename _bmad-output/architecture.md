@@ -1,5 +1,5 @@
 ---
-stepsCompleted: [1, 2, 3, 4, 5]
+stepsCompleted: [1, 2, 3, 4, 5, 6]
 inputDocuments:
   - _bmad-output/prd.md
   - _bmad-output/project-planning-artifacts/ux-design-specification.md
@@ -2294,4 +2294,931 @@ export async function POST() {
   const data = await prisma.create({ ... });  // NO - wrap in try-catch
   return Response.json(data);
 }
+```
+
+## Project Structure & Boundaries
+
+### Complete Project Directory Structure
+
+```
+flottebox-mvp/
+├── README.md
+├── package.json
+├── pnpm-lock.yaml
+├── next.config.js                 # Next.js + PWA config
+├── tailwind.config.ts             # TailwindCSS + shadcn/ui
+├── tsconfig.json                  # TypeScript strict mode
+├── .env                           # Environment variables (gitignored)
+├── .env.example                   # Template env vars
+├── .env.local                     # Local overrides
+├── .gitignore
+├── .eslintrc.json                 # ESLint config
+├── .prettierrc                    # Prettier config
+├── vercel.json                    # Vercel cron + deployment config
+├──
+├── .github/
+│   └── workflows/
+│       ├── ci.yml                 # CI: lint + type-check + test
+│       └── e2e.yml                # E2E tests on PR
+│
+├── app/                           # Next.js 16 App Router
+│   ├── globals.css                # Global styles + Tailwind
+│   ├── layout.tsx                 # Root layout + providers
+│   ├── page.tsx                   # Landing page
+│   ├── error.tsx                  # Global error boundary
+│   ├── not-found.tsx              # 404 page
+│   ├──
+│   ├── (auth)/                    # Auth routes group (unauthenticated)
+│   │   ├── layout.tsx             # Auth layout (centered)
+│   │   ├── login/
+│   │   │   └── page.tsx           # Login page (email + Google OAuth)
+│   │   ├── register/
+│   │   │   └── page.tsx           # Register page (organization creation)
+│   │   └── forgot-password/
+│   │       └── page.tsx           # Password reset
+│   │
+│   ├── (dashboard)/               # Protected routes group (authenticated)
+│   │   ├── layout.tsx             # Dashboard layout (sidebar + header)
+│   │   ├── page.tsx               # Dashboard home (overview metrics)
+│   │   ├──
+│   │   ├── vehicles/              # Feature: Vehicle management
+│   │   │   ├── page.tsx           # Vehicle list + filters + import CSV
+│   │   │   ├── new/
+│   │   │   │   └── page.tsx       # Create vehicle form
+│   │   │   ├── [vehicleId]/
+│   │   │   │   ├── page.tsx       # Vehicle details + documents list
+│   │   │   │   ├── edit/
+│   │   │   │   │   └── page.tsx   # Edit vehicle form
+│   │   │   │   └── documents/
+│   │   │   │       ├── page.tsx   # Documents management for vehicle
+│   │   │   │       └── [documentId]/
+│   │   │   │           └── page.tsx # Document validation form (OCR)
+│   │   │   └── components/        # Feature-scoped components
+│   │   │       ├── VehicleCard.tsx
+│   │   │       ├── VehicleForm.tsx
+│   │   │       ├── VehicleFilters.tsx
+│   │   │       ├── VehicleImportCsv.tsx
+│   │   │       └── VehicleStats.tsx
+│   │   │
+│   │   ├── documents/             # Feature: Document management
+│   │   │   ├── page.tsx           # All documents list (cross-vehicle)
+│   │   │   ├── compliance/
+│   │   │   │   └── page.tsx       # Compliance dashboard (alerts)
+│   │   │   └── components/
+│   │   │       ├── DocumentCard.tsx
+│   │   │       ├── DocumentUploadForm.tsx
+│   │   │       ├── DocumentValidationForm.tsx
+│   │   │       ├── ComplianceWidget.tsx
+│   │   │       └── AlertsList.tsx
+│   │   │
+│   │   ├── drivers/               # Feature: Driver management
+│   │   │   ├── page.tsx           # Driver list + onboarding
+│   │   │   ├── new/
+│   │   │   │   └── page.tsx       # Create driver + send SMS
+│   │   │   ├── [driverId]/
+│   │   │   │   ├── page.tsx       # Driver details + assigned vehicles
+│   │   │   │   └── edit/
+│   │   │   │       └── page.tsx   # Edit driver
+│   │   │   └── components/
+│   │   │       ├── DriverCard.tsx
+│   │   │       ├── DriverForm.tsx
+│   │   │       ├── DriverOnboardingWizard.tsx
+│   │   │       ├── DriverAdoptionStats.tsx
+│   │   │       └── OnboardingSmsDialog.tsx
+│   │   │
+│   │   ├── analytics/             # Feature: Analytics & adoption
+│   │   │   ├── page.tsx           # Analytics dashboard
+│   │   │   └── components/
+│   │   │       ├── AdoptionChart.tsx
+│   │   │       ├── UsageMetrics.tsx
+│   │   │       └── ActivityTimeline.tsx
+│   │   │
+│   │   ├── settings/              # Feature: Organization settings
+│   │   │   ├── page.tsx           # Settings home (redirect to profile)
+│   │   │   ├── profile/
+│   │   │   │   └── page.tsx       # User profile
+│   │   │   ├── organization/
+│   │   │   │   └── page.tsx       # Org settings + members + billing
+│   │   │   └── components/
+│   │   │       ├── ProfileForm.tsx
+│   │   │       ├── OrganizationForm.tsx
+│   │   │       ├── MembersList.tsx
+│   │   │       └── BillingSection.tsx
+│   │   │
+│   │   └── install/               # PWA install page (for drivers SMS)
+│   │       └── page.tsx           # PWA install instructions + QR code
+│   │
+│   ├── api/                       # API Routes (Next.js route handlers)
+│   │   ├── health/
+│   │   │   └── route.ts           # Health check endpoint (UptimeRobot)
+│   │   ├──
+│   │   ├── auth/                  # Better Auth endpoints (auto-generated)
+│   │   │   └── [...all]/
+│   │   │       └── route.ts       # Better Auth wildcard route
+│   │   │
+│   │   ├── vehicles/              # Vehicle CRUD API
+│   │   │   ├── route.ts           # GET /api/vehicles, POST /api/vehicles
+│   │   │   ├── [id]/
+│   │   │   │   └── route.ts       # GET, PATCH, DELETE /api/vehicles/:id
+│   │   │   └── import-csv/
+│   │   │       └── route.ts       # POST /api/vehicles/import-csv
+│   │   │
+│   │   ├── documents/             # Document CRUD + OCR
+│   │   │   ├── route.ts           # GET /api/documents, POST /api/documents
+│   │   │   ├── [id]/
+│   │   │   │   └── route.ts       # GET, PATCH, DELETE /api/documents/:id
+│   │   │   ├── presigned-url/
+│   │   │   │   └── route.ts       # POST /api/documents/presigned-url
+│   │   │   ├── ocr/
+│   │   │   │   └── route.ts       # POST /api/documents/ocr
+│   │   │   └── download/
+│   │   │       └── route.ts       # GET /api/documents/download?id=xxx
+│   │   │
+│   │   ├── drivers/               # Driver CRUD + onboarding
+│   │   │   ├── route.ts           # GET /api/drivers, POST /api/drivers
+│   │   │   ├── [id]/
+│   │   │   │   └── route.ts       # GET, PATCH, DELETE /api/drivers/:id
+│   │   │   └── send-onboarding-sms/
+│   │   │       └── route.ts       # POST /api/drivers/send-onboarding-sms
+│   │   │
+│   │   ├── analytics/             # Analytics endpoints
+│   │   │   ├── driver-adoption/
+│   │   │   │   └── route.ts       # GET /api/analytics/driver-adoption
+│   │   │   └── usage-stats/
+│   │   │       └── route.ts       # GET /api/analytics/usage-stats
+│   │   │
+│   │   ├── organizations/         # Organization management
+│   │   │   ├── route.ts           # GET /api/organizations
+│   │   │   ├── [id]/
+│   │   │   │   └── route.ts       # GET, PATCH /api/organizations/:id
+│   │   │   └── delete/
+│   │   │       └── route.ts       # POST /api/organizations/delete (RGPD)
+│   │   │
+│   │   └── cron/                  # Vercel Cron jobs
+│   │       └── calculate-alerts/
+│   │           └── route.ts       # GET /api/cron/calculate-alerts (daily)
+│   │
+│   ├── cookies/
+│   │   └── page.tsx               # Cookie policy page
+│   ├── mentions-legales/
+│   │   └── page.tsx               # Legal mentions
+│   ├── confidentialite/
+│   │   └── page.tsx               # Privacy policy (RGPD)
+│   └── cgu/
+│       └── page.tsx               # Terms of service
+│
+├── components/                    # Shared components
+│   ├── ui/                        # shadcn/ui components
+│   │   ├── button.tsx
+│   │   ├── card.tsx
+│   │   ├── input.tsx
+│   │   ├── form.tsx
+│   │   ├── dialog.tsx
+│   │   ├── table.tsx
+│   │   ├── badge.tsx
+│   │   ├── alert.tsx
+│   │   ├── toast.tsx
+│   │   ├── calendar.tsx
+│   │   ├── select.tsx
+│   │   ├── textarea.tsx
+│   │   └── ...                    # Other shadcn components
+│   │
+│   ├── shared/                    # Truly shared components
+│   │   ├── Header.tsx             # Dashboard header (org selector)
+│   │   ├── Sidebar.tsx            # Dashboard sidebar nav
+│   │   ├── Footer.tsx             # Footer with legal links
+│   │   ├── LoadingSpinner.tsx
+│   │   ├── EmptyState.tsx
+│   │   └── ErrorBoundary.tsx
+│   │
+│   └── providers/                 # React Context providers
+│       ├── OrganizationProvider.tsx
+│       ├── ThemeProvider.tsx
+│       └── ToastProvider.tsx
+│
+├── lib/                           # Utilities and configs
+│   ├── auth.ts                    # Better Auth config
+│   ├── prisma.ts                  # Prisma client singleton
+│   ├── prisma-middleware.ts       # Multi-tenant middleware (CRITICAL)
+│   ├── offline-db.ts              # Dexie.js IndexedDB config
+│   ├── sync-engine.ts             # Offline sync logic
+│   ├── sms-rate-limiter.ts        # SMS rate limiting
+│   ├── s3-client.ts               # OVH Object Storage client
+│   ├── ocr-client.ts              # Mistral OCR API client
+│   ├── email.ts                   # Resend email client
+│   ├── sms.ts                     # OVH SMS API client
+│   ├── utils.ts                   # Generic helpers (cn, formatters)
+│   ├── api-types.ts               # API response types
+│   │
+│   ├── schemas/                   # Zod validation schemas
+│   │   ├── generated/             # Auto-generated from Prisma
+│   │   │   ├── vehicle.schema.ts
+│   │   │   ├── document.schema.ts
+│   │   │   ├── driver.schema.ts
+│   │   │   └── ...
+│   │   ├── vehicle.schema.ts      # Custom vehicle schemas
+│   │   ├── document.schema.ts     # Custom document schemas
+│   │   ├── driver.schema.ts       # Custom driver schemas
+│   │   ├── auth.schema.ts         # Auth schemas
+│   │   └── index.ts               # Barrel exports
+│   │
+│   └── constants/
+│       ├── document-types.ts      # Document type enums
+│       ├── roles.ts               # User roles
+│       └── pricing.ts             # Pricing tiers
+│
+├── prisma/
+│   ├── schema.prisma              # Complete Prisma schema
+│   ├── migrations/                # Prisma migrations
+│   │   └── YYYYMMDDHHMMSS_*/
+│   └── seed.ts                    # Database seed script
+│
+├── public/                        # Static assets
+│   ├── manifest.json              # PWA manifest
+│   ├── sw.js                      # Service worker (generated)
+│   ├── workbox-*.js               # Workbox runtime (generated)
+│   ├── favicon.ico
+│   ├── icon-192.png               # PWA icons
+│   ├── icon-512.png
+│   ├── apple-touch-icon.png
+│   │
+│   ├── assets/
+│   │   ├── images/
+│   │   │   ├── logo.svg
+│   │   │   ├── onboarding-qr.png
+│   │   │   └── ...
+│   │   └── videos/
+│   │       └── tutorial-chauffeur-90s.mp4
+│   │
+│   └── locales/                   # i18n (future)
+│       └── fr.json
+│
+├── tests/                         # Test files
+│   ├── setup.ts                   # Test setup (Vitest)
+│   │
+│   ├── unit/                      # Unit tests
+│   │   ├── lib/
+│   │   │   ├── prisma-middleware.test.ts
+│   │   │   ├── sms-rate-limiter.test.ts
+│   │   │   └── sync-engine.test.ts
+│   │   └── components/
+│   │       ├── VehicleCard.test.tsx
+│   │       └── DocumentUploadForm.test.tsx
+│   │
+│   ├── integration/               # Integration tests
+│   │   ├── api/
+│   │   │   ├── vehicles.test.ts
+│   │   │   ├── documents.test.ts
+│   │   │   └── ocr.test.ts
+│   │   └── offline/
+│   │       └── sync.test.ts
+│   │
+│   ├── e2e/                       # Playwright E2E tests
+│   │   ├── playwright.config.ts
+│   │   ├── auth.setup.ts
+│   │   ├── vehicle-management.spec.ts
+│   │   ├── document-upload-ocr.spec.ts
+│   │   ├── driver-onboarding.spec.ts
+│   │   ├── offline-sync.spec.ts
+│   │   └── compliance-dashboard.spec.ts
+│   │
+│   └── __mocks__/                 # Test mocks
+│       ├── prisma.ts
+│       ├── better-auth.ts
+│       └── s3-client.ts
+│
+├── sentry.client.config.ts        # Sentry client config
+├── sentry.server.config.ts        # Sentry server config
+├── sentry.edge.config.ts          # Sentry edge config
+├── middleware.ts                  # Next.js middleware (auth + audit)
+└── instrumentation.ts             # Next.js instrumentation (Sentry)
+```
+
+---
+
+### Architectural Boundaries
+
+#### **API Boundaries**
+
+**External API Endpoints** (Public facing):
+- `POST /api/auth/*` - Better Auth endpoints (login, register, OAuth)
+- `GET /api/health` - Health check for monitoring
+
+**Internal API Endpoints** (Authenticated, multi-tenant):
+- `/api/vehicles/*` - Vehicle CRUD operations
+- `/api/documents/*` - Document management + OCR workflow
+- `/api/drivers/*` - Driver management + SMS onboarding
+- `/api/analytics/*` - Analytics and metrics
+- `/api/organizations/*` - Organization settings
+- `/api/cron/*` - Background jobs (Vercel Cron secret protected)
+
+**API Security Layers**:
+1. **Better Auth middleware** → Session validation
+2. **Prisma middleware** → Automatic `orgId` injection (multi-tenant isolation)
+3. **RBAC guards** → Role-based access control (Admin/Manager/Driver)
+4. **Audit logging** → All sensitive operations logged
+
+---
+
+#### **Component Boundaries**
+
+**Component Communication Patterns**:
+
+```
+┌─────────────────────────────────────────────────────┐
+│ App Layout                                          │
+│  ├─ OrganizationProvider (React Context)           │
+│  │   ↓ provides: { orgId, orgName, role }          │
+│  │                                                   │
+│  ├─ Dashboard Layout                                │
+│  │   ├─ Header (orgId from context)                │
+│  │   ├─ Sidebar (role-based nav)                   │
+│  │   │                                              │
+│  │   └─ Feature Pages                              │
+│  │       ├─ /vehicles → VehicleList                │
+│  │       │   ├─ fetch('/api/vehicles')             │
+│  │       │   │   ↓ Prisma middleware injects orgId │
+│  │       │   └─ VehicleCard[] components          │
+│  │       │                                          │
+│  │       ├─ /documents → DocumentList              │
+│  │       │   ├─ DocumentUploadForm                 │
+│  │       │   │   ↓ POST /api/documents/presigned-url│
+│  │       │   │   ↓ Direct upload to OVH S3         │
+│  │       │   │   ↓ POST /api/documents/ocr         │
+│  │       │   └─ DocumentValidationForm             │
+│  │       │                                          │
+│  │       └─ /drivers → DriverList                  │
+│  │           └─ DriverOnboardingWizard            │
+│  │               ↓ POST /api/drivers/send-onboarding-sms│
+│  │                                                   │
+│  └─ ToastProvider (global notifications)           │
+└─────────────────────────────────────────────────────┘
+```
+
+**State Management**:
+- **Server State**: React Server Components (default)
+- **Client State**: React useState/useReducer (minimal)
+- **Form State**: React Hook Form + Zod
+- **Offline State**: IndexedDB via Dexie.js
+- **Global UI State**: React Context (organization, theme)
+
+---
+
+#### **Service Boundaries**
+
+**Service Layer Pattern**:
+
+```
+API Route Handler
+  ↓
+  ├─ Session validation (Better Auth)
+  ├─ Input validation (Zod schemas)
+  ↓
+  ├─ Service function (business logic)
+  │   ↓
+  │   ├─ Prisma queries (auto orgId injection)
+  │   ├─ External API calls (OCR, SMS, Email)
+  │   └─ File operations (S3 upload/download)
+  ↓
+  ├─ Audit logging (sensitive operations)
+  ├─ Error handling (Sentry)
+  └─ Response formatting (ApiResponse<T>)
+```
+
+**Service Integration Points**:
+
+**Better Auth Service**:
+- Location: `lib/auth.ts`
+- Boundaries: Authentication, session management, OAuth
+- Integration: Prisma User/Session/Account tables
+
+**Prisma Service**:
+- Location: `lib/prisma.ts` + `lib/prisma-middleware.ts`
+- Boundaries: Database access, multi-tenant isolation
+- Integration: PostgreSQL (OVH)
+
+**Object Storage Service**:
+- Location: `lib/s3-client.ts`
+- Boundaries: File upload/download, presigned URLs
+- Integration: OVH Object Storage (S3-compatible)
+
+**OCR Service**:
+- Location: `lib/ocr-client.ts`
+- Boundaries: Document OCR processing
+- Integration: Mistral OCR API
+
+**Email Service**:
+- Location: `lib/email.ts`
+- Boundaries: Transactional emails, alerts
+- Integration: Resend API
+
+**SMS Service**:
+- Location: `lib/sms.ts` + `lib/sms-rate-limiter.ts`
+- Boundaries: Driver onboarding SMS
+- Integration: OVH SMS API
+
+**Offline Sync Service**:
+- Location: `lib/offline-db.ts` + `lib/sync-engine.ts`
+- Boundaries: Offline document storage, background sync
+- Integration: IndexedDB + Service Workers
+
+---
+
+#### **Data Boundaries**
+
+**Database Schema Boundaries**:
+
+```prisma
+// Better Auth schema (provided by plugin)
+User, Session, Account, Organization, Member
+
+// FlotteBox business schema
+Vehicle, Document, Driver, DriverVehicle
+
+// Observability schema
+UserActivity, EmailLog, SmsLog, AuditLog
+```
+
+**Data Access Patterns**:
+
+1. **Read Operations**:
+   - All reads filtered by `orgId` (Prisma middleware)
+   - Includes: `{ org: true }` for related data
+   - Indexes: `[orgId]`, `[orgId, field]` for performance
+
+2. **Write Operations**:
+   - All creates inject `orgId` (Prisma middleware)
+   - Updates/Deletes require explicit `orgId` in where clause
+   - Audit log created for sensitive operations
+
+3. **Caching Strategy**:
+   - Next.js `unstable_cache` for dashboard metrics (60s revalidate)
+   - Route handlers with `revalidate` for lists
+   - No external cache (Redis) in MVP
+
+**External Data Integration**:
+
+- **OVH Object Storage**: Document files (PDFs, images)
+  - Bucket structure: `org-{orgId}/vehicles/{vehicleId}/docs/`
+  - Presigned URLs (5 min expiration)
+
+- **Mistral OCR API**: Document text extraction
+  - Timeout: 30s
+  - Retry: 3 attempts with exponential backoff
+
+- **Resend API**: Transactional emails
+  - Free tier: 3k emails/month
+
+- **OVH SMS API**: Driver onboarding
+  - Rate limit: 3 SMS/org/day (DB-based)
+
+---
+
+### Requirements to Structure Mapping
+
+#### **Epic/Feature Mapping**
+
+**Epic 1: Authentication & Multi-tenant Setup**
+- **Location**: `app/(auth)/`, `app/api/auth/`, `lib/auth.ts`
+- **Database**: Better Auth tables (User, Session, Organization, Member)
+- **Components**: Login, Register forms
+- **Tests**: `tests/e2e/auth.setup.ts`
+
+**Epic 2: Vehicle Management**
+- **Location**: `app/(dashboard)/vehicles/`, `app/api/vehicles/`
+- **Database**: Vehicle table
+- **Components**: `app/(dashboard)/vehicles/components/*`
+- **Schemas**: `lib/schemas/vehicle.schema.ts`
+- **Tests**: `tests/e2e/vehicle-management.spec.ts`
+
+**Epic 3: Document Management & OCR**
+- **Location**: `app/(dashboard)/documents/`, `app/api/documents/`
+- **Database**: Document table
+- **Components**: `app/(dashboard)/documents/components/*`
+- **Services**: `lib/ocr-client.ts`, `lib/s3-client.ts`
+- **Schemas**: `lib/schemas/document.schema.ts`
+- **Tests**: `tests/e2e/document-upload-ocr.spec.ts`
+
+**Epic 4: Driver Onboarding & Management**
+- **Location**: `app/(dashboard)/drivers/`, `app/api/drivers/`
+- **Database**: Driver table (extends User), DriverVehicle junction
+- **Components**: `app/(dashboard)/drivers/components/*`
+- **Services**: `lib/sms.ts`, `lib/sms-rate-limiter.ts`
+- **Schemas**: `lib/schemas/driver.schema.ts`
+- **Tests**: `tests/e2e/driver-onboarding.spec.ts`
+
+**Epic 5: Offline-First PWA**
+- **Location**: `lib/offline-db.ts`, `lib/sync-engine.ts`, `public/sw.js`
+- **Database**: IndexedDB (OfflineDocument store)
+- **Configuration**: `next.config.js` (PWA), `public/manifest.json`
+- **Tests**: `tests/e2e/offline-sync.spec.ts`, `tests/integration/offline/sync.test.ts`
+
+**Epic 6: Compliance Dashboard & Alerts**
+- **Location**: `app/(dashboard)/documents/compliance/`, `app/api/cron/calculate-alerts/`
+- **Database**: Document.expiryDate, EmailLog
+- **Components**: `app/(dashboard)/documents/components/ComplianceWidget.tsx`
+- **Services**: `lib/email.ts`
+- **Configuration**: `vercel.json` (cron schedule)
+- **Tests**: `tests/integration/api/alerts.test.ts`
+
+**Epic 7: Analytics & Adoption Tracking**
+- **Location**: `app/(dashboard)/analytics/`, `app/api/analytics/`
+- **Database**: UserActivity table
+- **Components**: `app/(dashboard)/analytics/components/*`
+- **Tests**: `tests/integration/api/analytics.test.ts`
+
+---
+
+#### **Cross-Cutting Concerns**
+
+**Multi-Tenant Isolation** (CRITICAL):
+- **Location**: `lib/prisma-middleware.ts` (MANDATORY for all DB queries)
+- **Applies to**: All API routes, all Prisma queries
+- **Security**: Automatic `orgId` injection, prevents data leaks
+- **Tests**: `tests/unit/lib/prisma-middleware.test.ts`
+
+**Authentication & Authorization**:
+- **Location**: `lib/auth.ts`, `middleware.ts`
+- **Applies to**: All `/app/(dashboard)/*` routes, all `/api/*` except `/api/auth/*`
+- **RBAC**: Admin, Manager, Driver roles
+- **Tests**: `tests/e2e/auth.setup.ts`
+
+**Audit Logging**:
+- **Location**: `middleware.ts` (automatic), `lib/audit.ts` (manual)
+- **Database**: AuditLog table
+- **Applies to**: Document download, data export, user deletion
+- **Retention**: 10 years (RGPD compliance)
+
+**Error Handling & Monitoring**:
+- **Location**: `app/error.tsx`, `sentry.*.config.ts`
+- **Applies to**: All routes, all API endpoints
+- **Services**: Sentry (error tracking), Vercel Logs
+- **Tests**: Error boundaries in all E2E tests
+
+**RGPD Compliance**:
+- **Location**: `app/api/organizations/delete/`, `lib/prisma-middleware.ts`
+- **Features**: Droit à l'oubli (anonymization), audit logs, data encryption
+- **Legal pages**: `/cookies`, `/confidentialite`, `/mentions-legales`, `/cgu`
+
+**Offline Sync**:
+- **Location**: `lib/sync-engine.ts`, Service Worker (`public/sw.js`)
+- **Applies to**: Document upload workflow (mobile drivers)
+- **Strategy**: Last-write-wins, exponential retry
+- **Tests**: `tests/e2e/offline-sync.spec.ts`
+
+---
+
+### Integration Points
+
+#### **Internal Communication**
+
+**Client → Server** (API Routes):
+```typescript
+// Client component
+const response = await fetch('/api/vehicles', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify(vehicleData)
+});
+
+// Server route handler
+export async function POST(req: Request) {
+  const session = await getServerSession();  // Better Auth
+  // session.orgId → available for RBAC + Prisma middleware
+
+  const vehicle = await prisma.vehicle.create({
+    data: validatedData
+    // orgId auto-injected by middleware
+  });
+
+  return Response.json(vehicle);
+}
+```
+
+**Server Components → Database**:
+```typescript
+// Server component (default in app/)
+async function VehicleList() {
+  // Direct Prisma access (server-side only)
+  const vehicles = await prisma.vehicle.findMany({
+    // orgId auto-injected by middleware
+    include: { documents: true }
+  });
+
+  return <VehicleGrid vehicles={vehicles} />;
+}
+```
+
+**Component → Component** (Props):
+```typescript
+// Parent → Child via props (React standard)
+<VehicleList>
+  {vehicles.map(v =>
+    <VehicleCard key={v.id} vehicle={v} onEdit={handleEdit} />
+  )}
+</VehicleList>
+```
+
+**Component → Context**:
+```typescript
+// Access global state via React Context
+const { orgId, role } = useOrganization();
+
+// UI-level permissions
+if (role !== 'ADMIN' && role !== 'MANAGER') {
+  return <AccessDenied />;
+}
+```
+
+---
+
+#### **External Integrations**
+
+**OVH Object Storage** (S3-compatible):
+```typescript
+// lib/s3-client.ts
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+
+const s3 = new S3Client({
+  region: 'fr-par',
+  endpoint: process.env.OVH_S3_ENDPOINT,
+  credentials: {
+    accessKeyId: process.env.OVH_ACCESS_KEY_ID,
+    secretAccessKey: process.env.OVH_SECRET_ACCESS_KEY
+  }
+});
+
+// Usage in API route
+const presignedUrl = await getSignedUrl(s3, new PutObjectCommand({
+  Bucket: 'flottebox-documents',
+  Key: `org-${orgId}/vehicles/${vehicleId}/docs/${docId}.pdf`,
+  Expires: 300  // 5 minutes
+}));
+```
+
+**Mistral OCR API**:
+```typescript
+// lib/ocr-client.ts
+import { Mistral } from '@mistralai/mistralai';
+
+const mistral = new Mistral({
+  apiKey: process.env.MISTRAL_API_KEY
+});
+
+// Usage in OCR route
+const ocrResult = await mistral.ocr({
+  imageUrl: documentUrl,
+  language: 'fr',
+  timeout: 30000
+});
+```
+
+**Resend API** (Email):
+```typescript
+// lib/email.ts
+import { Resend } from 'resend';
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+// Usage in alert job
+await resend.emails.send({
+  from: 'alertes@flottebox.fr',
+  to: org.alertEmail,
+  subject: `${docs.length} échéances à surveiller`,
+  html: emailTemplate
+});
+```
+
+**OVH SMS API**:
+```typescript
+// lib/sms.ts
+import axios from 'axios';
+
+export async function sendOVHSMS(phone: string, message: string) {
+  // Rate limit check
+  const canSend = await canSendSMS(orgId);
+  if (!canSend) throw new Error('Rate limit exceeded');
+
+  // Send via OVH API
+  await axios.post('https://eu.api.ovh.com/1.0/sms/send', {
+    serviceName: process.env.OVH_SMS_SERVICE,
+    message,
+    receivers: [phone]
+  }, {
+    headers: {
+      'X-Ovh-Application': process.env.OVH_APP_KEY,
+      'X-Ovh-Timestamp': Date.now(),
+      'X-Ovh-Signature': generateSignature()
+    }
+  });
+}
+```
+
+**Better Auth** (Authentication):
+```typescript
+// lib/auth.ts
+import { betterAuth } from 'better-auth';
+import { prismaAdapter } from 'better-auth/adapters/prisma';
+import { organization } from '@better-auth/organization';
+
+export const auth = betterAuth({
+  database: prismaAdapter(prisma),
+  emailAndPassword: {
+    enabled: true
+  },
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET
+    }
+  },
+  plugins: [
+    organization({
+      roles: ['ADMIN', 'MANAGER', 'DRIVER']
+    })
+  ]
+});
+```
+
+---
+
+#### **Data Flow**
+
+**Document Upload & OCR Workflow**:
+```
+1. Driver opens mobile app (PWA)
+   ↓
+2. Takes photo of document (camera API)
+   ↓
+3. App checks network status
+   ├─ ONLINE:
+   │   ↓ POST /api/documents/presigned-url
+   │   ↓ Direct upload to OVH S3 (presigned URL)
+   │   ↓ POST /api/documents/ocr (trigger OCR)
+   │   ↓ Mistral OCR API processes document
+   │   ↓ OCR result stored in Document.ocrData (JSON)
+   │   ↓ UI shows validation form (pre-filled)
+   │   ↓ Driver validates/corrects → POST /api/documents/:id
+   │   └─ Document status: VALIDATED
+   │
+   └─ OFFLINE:
+       ↓ Store in IndexedDB (OfflineDocument)
+       ↓ Service Worker registers background sync
+       ↓ When network returns:
+       ↓ Sync engine uploads to OVH
+       ↓ Triggers OCR
+       └─ Same flow as ONLINE from OCR step
+```
+
+**Compliance Alert Flow**:
+```
+1. Vercel Cron triggers daily (8h UTC)
+   ↓ GET /api/cron/calculate-alerts
+   ↓
+2. Query documents expiring in 60/30/15 days
+   ↓ Prisma query with orgId filtering
+   ↓
+3. Group alerts by organization
+   ↓
+4. For each org:
+   ↓ Render email template (HTML)
+   ↓ Send via Resend API
+   ↓ Log to EmailLog table
+   ↓ Mark Document.alertSent = true
+   └─
+5. Manager receives email with alert list
+   ↓ Clicks link → Opens compliance dashboard
+   └─ Sees all expiring documents
+```
+
+**Driver Onboarding Flow**:
+```
+1. Manager creates driver account
+   ↓ POST /api/drivers (username + temp password generated)
+   ↓
+2. Manager triggers SMS onboarding
+   ↓ POST /api/drivers/send-onboarding-sms
+   ↓ Rate limit check (3 SMS/org/day)
+   ↓ OVH SMS API sends SMS with credentials + PWA link
+   ↓ Log to SmsLog table
+   ↓
+3. Driver receives SMS on phone
+   ↓ Opens PWA install link
+   ↓ /install page with QR code + instructions
+   ↓ Installs PWA (Add to Home Screen)
+   ↓
+4. Driver opens PWA → Login
+   ↓ POST /api/auth/login (credentials from SMS)
+   ↓ Better Auth validates → creates session
+   ↓ Redirect to /dashboard
+   ↓
+5. First login → Onboarding wizard
+   ↓ Video tutorial (90s)
+   ↓ Guided first document scan
+   └─ Driver ready to use app
+```
+
+---
+
+### File Organization Patterns
+
+**Configuration Files** (Root level):
+- `package.json` - Dependencies, scripts, project metadata
+- `next.config.js` - Next.js + PWA configuration
+- `tailwind.config.ts` - TailwindCSS + theme customization
+- `tsconfig.json` - TypeScript strict mode configuration
+- `vercel.json` - Vercel cron jobs + deployment settings
+- `.env.example` - Environment variables template
+- `.eslintrc.json` - ESLint rules (Next.js recommended)
+- `.prettierrc` - Code formatting rules
+
+**Source Organization**:
+- `/app` - Next.js App Router (routes, layouts, pages)
+  - Route groups: `(auth)`, `(dashboard)` for layout isolation
+  - API routes: `/app/api/*` for backend endpoints
+  - Feature co-location: components inside feature folders
+
+- `/components` - Shared components only
+  - `/ui` - shadcn/ui base components
+  - `/shared` - Truly reusable components
+  - `/providers` - React Context providers
+
+- `/lib` - Business logic & utilities
+  - Services: `auth.ts`, `prisma.ts`, `s3-client.ts`, etc.
+  - Utilities: `utils.ts`, `api-types.ts`, `constants/`
+  - Schemas: `/schemas` for Zod validation
+
+**Test Organization**:
+- `/tests/unit` - Unit tests (mirrors `/lib` structure)
+- `/tests/integration` - Integration tests (API routes)
+- `/tests/e2e` - Playwright end-to-end tests (user workflows)
+- `/tests/__mocks__` - Test doubles (Prisma, external APIs)
+
+**Asset Organization**:
+- `/public` - Static files served by Next.js
+  - PWA files: `manifest.json`, service worker
+  - Images: `/assets/images`
+  - Videos: `/assets/videos` (onboarding tutorial)
+
+---
+
+### Development Workflow Integration
+
+**Development Server**:
+```bash
+pnpm dev               # Next.js dev server (port 3000)
+pnpm prisma studio     # Prisma GUI (port 5555)
+```
+
+**Build Process**:
+```bash
+pnpm build             # Next.js production build + PWA generation
+  ↓ TypeScript compilation
+  ↓ Prisma client generation
+  ↓ Service Worker generation (next-pwa)
+  ↓ TailwindCSS purge + minify
+  ↓ Next.js optimization (code split, image opt)
+```
+
+**Deployment Process** (Vercel):
+```bash
+git push origin main
+  ↓ GitHub webhook triggers Vercel build
+  ↓ Environment variables loaded
+  ↓ pnpm install
+  ↓ prisma generate
+  ↓ pnpm build
+  ↓ Deploy to Vercel Edge Network
+  ↓ Run database migrations (if any)
+  └─ Deploy complete → https://flottebox.vercel.app
+```
+
+**Database Migrations**:
+```bash
+# Development
+pnpm prisma migrate dev --name add_vehicle_table
+
+# Production (automatic via Vercel)
+pnpm prisma migrate deploy
+```
+
+**Testing Workflow**:
+```bash
+pnpm test              # Vitest unit + integration tests
+pnpm test:e2e          # Playwright E2E tests
+pnpm test:e2e:ui       # Playwright UI mode (debugging)
+```
+
+**CI/CD Pipeline** (GitHub Actions):
+```yaml
+# .github/workflows/ci.yml
+on: [push, pull_request]
+jobs:
+  lint:
+    - pnpm lint
+    - pnpm type-check
+  test:
+    - pnpm test
+  e2e:
+    - pnpm test:e2e
 ```
