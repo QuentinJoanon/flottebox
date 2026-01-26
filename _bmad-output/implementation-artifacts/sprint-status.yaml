@@ -1,0 +1,191 @@
+# generated: 2026-01-26
+# project: laboiteagants_cahier des charges
+# project_key: laboiteagants
+# tracking_system: file-system
+# story_location: _bmad-output/implementation-artifacts
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+#
+# Epic Status Transitions:
+#   - backlog → in-progress: Automatically when first story is created (via create-story)
+#   - in-progress → done: Manually when all stories reach 'done' status
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created in stories folder
+#   - in-progress: Developer actively working on implementation
+#   - review: Ready for code review (via Dev's code-review workflow)
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epic transitions to 'in-progress' automatically when first story is created
+# - Stories can be worked in parallel if team capacity allows
+# - SM typically creates next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+
+generated: 2026-01-26
+project: laboiteagants_cahier des charges
+project_key: laboiteagants
+tracking_system: file-system
+story_location: _bmad-output/implementation-artifacts
+
+development_status:
+  # ═══════════════════════════════════════════════════════════════════════════
+  # EPIC 1: Project Foundation & Authentication (7 stories)
+  # ═══════════════════════════════════════════════════════════════════════════
+  epic-1: backlog
+  1-1-initialize-project-with-better-auth-starter-template: backlog
+  1-2-configure-multi-tenant-database-schema-isolation: backlog
+  1-3-implement-company-registration-with-email-password: backlog
+  1-4-implement-oauth-google-authentication: backlog
+  1-5-implement-user-login-session-management: backlog
+  1-6-implement-rgpd-consent-management-privacy-ui: backlog
+  1-7-implement-2fa-configuration-for-admin-users: backlog
+  epic-1-retrospective: optional
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # EPIC 2: Fleet Management Core (4 stories)
+  # ═══════════════════════════════════════════════════════════════════════════
+  epic-2: backlog
+  2-1-create-vehicle-entity-add-single-vehicle: backlog
+  2-2-import-vehicles-in-bulk-via-csv-upload: backlog
+  2-3-edit-and-delete-vehicle-records: backlog
+  2-4-auto-count-active-motors-trailers-for-billing: backlog
+  epic-2-retrospective: optional
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # EPIC 3: Driver Management & Onboarding (10 stories)
+  # ═══════════════════════════════════════════════════════════════════════════
+  epic-3: backlog
+  3-1-create-driver-accounts-with-custom-identifiers: backlog
+  3-2-assign-drivers-to-vehicles: backlog
+  3-3-driver-authentication-with-username-password: backlog
+  3-4-read-only-profile-access-for-drivers: backlog
+  3-5-deactivate-and-delete-driver-accounts: backlog
+  3-6-generate-qr-code-for-pwa-installation: backlog
+  3-7-send-onboarding-sms-with-credentials: backlog
+  3-8-install-pwa-via-qr-code-driver-flow: backlog
+  3-9-send-tutorial-video-sms-to-new-drivers: backlog
+  3-10-driver-management-dashboard-summary: backlog
+  epic-3-retrospective: optional
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # EPIC 4: Document Scanning & OCR (Mobile PWA) (8 stories)
+  # ═══════════════════════════════════════════════════════════════════════════
+  epic-4: backlog
+  4-1-create-document-entity-ovh-s3-integration: backlog
+  4-2-mobile-pwa-camera-scan-interface-with-large-touch-targets: backlog
+  4-3-mistral-ocr-api-integration-french-text-extraction: backlog
+  4-4-human-validation-workflow-with-pre-filled-form: backlog
+  4-5-automatic-document-type-classification: backlog
+  4-6-mark-illegible-documents-notify-gestionnaire: backlog
+  4-7-offline-first-document-storage-with-indexeddb: backlog
+  4-8-automatic-sync-on-network-reconnection: backlog
+  epic-4-retrospective: optional
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # EPIC 5: Document Management (Desktop) (4 stories)
+  # ═══════════════════════════════════════════════════════════════════════════
+  epic-5: backlog
+  5-1-desktop-drag-and-drop-document-upload: backlog
+  5-2-view-vehicle-documents-list-with-presigned-urls: backlog
+  5-3-bulk-zip-import-with-ocr-matching: backlog
+  5-4-document-archive-soft-delete-for-legal-retention: backlog
+  epic-5-retrospective: optional
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # EPIC 6: Compliance Dashboard & Real-Time Monitoring (3 stories)
+  # ═══════════════════════════════════════════════════════════════════════════
+  epic-6: backlog
+  6-1-real-time-compliance-dashboard-with-color-coded-status: backlog
+  6-2-interactive-calendar-of-upcoming-deadlines-30-days: backlog
+  6-3-driver-adoption-metrics-dashboard: backlog
+  epic-6-retrospective: optional
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # EPIC 7: Alerts & Notifications System (5 stories)
+  # ═══════════════════════════════════════════════════════════════════════════
+  epic-7: backlog
+  7-1-auto-calculate-expiration-deadlines-alert-triggers: backlog
+  7-2-email-notifications-with-resend-api: backlog
+  7-3-pwa-push-notifications-for-critical-alerts: backlog
+  7-4-customize-alert-frequency-types-per-vehicle: backlog
+  7-5-vercel-cron-job-configuration-monitoring: backlog
+  epic-7-retrospective: optional
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # EPIC 8: Compliance Exports & Reporting (3 stories)
+  # ═══════════════════════════════════════════════════════════════════════════
+  epic-8: backlog
+  8-1-export-registre-conducteurs-pdf: backlog
+  8-2-export-registre-vehicules-pdf-excel: backlog
+  8-3-custom-date-period-selection-compliance-report-preview: backlog
+  epic-8-retrospective: optional
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # EPIC 9: Billing & Subscription Management (6 stories)
+  # ═══════════════════════════════════════════════════════════════════════════
+  epic-9: backlog
+  9-1-lemonsqueezy-integration-subscription-creation: backlog
+  9-2-usage-based-billing-calculation-engine: backlog
+  9-3-ocr-add-on-billing-pay-as-you-go: backlog
+  9-4-tva-automatic-calculation-eu-compliance: backlog
+  9-5-self-service-add-ons-activation-billing-portal: backlog
+  9-6-invoice-generation-auto-renewal-cancellation: backlog
+  epic-9-retrospective: optional
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # EPIC 10: Driver Adoption & Gamification (3 stories)
+  # ═══════════════════════════════════════════════════════════════════════════
+  epic-10: backlog
+  10-1-guided-first-scan-with-contextual-tooltips: backlog
+  10-2-auto-activate-gamification-rules: backlog
+  10-3-badge-system-chauffeur-exemplaire-award: backlog
+  epic-10-retrospective: optional
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # EPIC 11: Third-Party Access & Multi-Client Management (3 stories)
+  # ═══════════════════════════════════════════════════════════════════════════
+  epic-11: backlog
+  11-1-grant-read-only-access-to-external-tiers: backlog
+  11-2-multi-client-comptable-account-management: backlog
+  11-3-tiers-export-capabilities: backlog
+  epic-11-retrospective: optional
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # EPIC 12: SMS Alerts Add-On (2 stories)
+  # ═══════════════════════════════════════════════════════════════════════════
+  epic-12: backlog
+  12-1-activate-sms-alerts-add-on-self-service: backlog
+  12-2-send-sms-alerts-to-drivers-for-critical-deadlines: backlog
+  epic-12-retrospective: optional
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # EPIC 13: Audit Logs & Compliance Tracking (P1) (3 stories)
+  # ═══════════════════════════════════════════════════════════════════════════
+  epic-13: backlog
+  13-1-log-all-access-modifications-with-utc-timestamps: backlog
+  13-2-audit-log-viewer-with-filters-user-date-action: backlog
+  13-3-3-year-retention-policy-immutable-logs: backlog
+  epic-13-retrospective: optional
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # EPIC 14: Super Admin Analytics & Health Monitoring (5 stories)
+  # ═══════════════════════════════════════════════════════════════════════════
+  epic-14: backlog
+  14-1-global-analytics-dashboard-mrr-churn-arpu-nps: backlog
+  14-2-client-health-score-monitoring-40-100-at-risk: backlog
+  14-3-feature-adoption-metrics: backlog
+  14-4-demo-mode-with-realistic-fake-data: backlog
+  14-5-funnel-engagement-event-tracking: backlog
+  epic-14-retrospective: optional
