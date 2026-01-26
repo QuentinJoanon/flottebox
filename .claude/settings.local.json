@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(dir:*)",
+      "Bash(git -C \"c:\\\\Users\\\\Quentin\\\\Documents\\\\Projets\\\\laboiteagants_cahier des charges\" log --oneline)"
     ]
   }
 }
