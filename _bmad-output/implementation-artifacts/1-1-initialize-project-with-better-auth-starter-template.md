@@ -1,6 +1,6 @@
 # Story 1.1: Initialize Project with Better Auth Starter Template
 
-Status: review
+Status: done
 
 ---
 
@@ -79,7 +79,7 @@ So that the foundation is set with Next.js 15+, Prisma, Better Auth, and shadcn/
 
 - [x] **Task 5: Initialize Prisma** (AC: #5, #6)
   - [x] 5.1 Run `pnpm prisma generate` successfully
-  - [ ] 5.2 Run `pnpm prisma db push` (REPORTÉ - pas de DB PostgreSQL configurée)
+  - [x] 5.2 Run `pnpm prisma db push` (Docker PostgreSQL local)
   - [x] 5.3 Verify Prisma Client types are generated
 
 - [x] **Task 6: Verify Build** (AC: #3)
@@ -314,7 +314,7 @@ Claude Opus 4.5 (claude-opus-4-5-20251101)
 - ✅ Build passe sans erreurs TypeScript
 - ✅ Serveur de développement démarre sur http://localhost:3000
 - ✅ Projet renommé en "flottebox-mvp", nouveau repo git initialisé
-- ⚠️ AC6 (prisma db push) reporté - pas de base PostgreSQL configurée
+- ✅ AC6 (prisma db push) complété avec Docker PostgreSQL local
 
 ### File List
 
@@ -329,6 +329,39 @@ Fichiers clés:
 - `flottebox-mvp/app/` - Routes Next.js App Router (auth, dashboard, api)
 - `flottebox-mvp/components/` - Composants React + shadcn/ui
 
+### Senior Developer Review (AI)
+
+**Reviewer:** Claude Opus 4.5 (Code Review Agent)
+**Date:** 2026-01-27
+**Outcome:** ✅ APPROVED (après corrections)
+
+#### Issues Found & Fixed
+
+| Severity | Issue | Resolution |
+|----------|-------|------------|
+| HIGH | Unsafe `as string` type assertions sur GOOGLE_CLIENT_ID/SECRET | ✅ Remplacé par validation conditionnelle - OAuth Google optionnel |
+| HIGH | AC6 non exécuté (prisma db push) | ✅ Exécuté avec succès sur Docker PostgreSQL local |
+| MEDIUM | console.log dans auth-actions.ts | ✅ Supprimé, retourne message d'erreur propre |
+| LOW | Secret dans .env (dev only) | ⚠️ Documenté - regénérer avant production |
+
+#### Files Modified During Review
+
+- `flottebox-mvp/lib/auth.ts` - Ajout validation env vars + OAuth conditionnel
+- `flottebox-mvp/actions/auth-actions.ts` - Suppression console.log
+
+#### AC Validation Summary
+
+| AC | Status |
+|---|---|
+| AC1: Clone & Init | ✅ |
+| AC2: pnpm install | ✅ |
+| AC3: Build Success | ✅ |
+| AC4: Env Variables | ✅ |
+| AC5: Prisma Generate | ✅ |
+| AC6: Prisma DB Push | ✅ |
+| AC7: Dev Server | ✅ |
+
 ### Change Log
 
+- 2026-01-27: Code review - Corrections sécurité et AC6 complété
 - 2026-01-27: Story 1.1 implémentée - Initialisation projet FlotteBox MVP depuis Better Auth starter

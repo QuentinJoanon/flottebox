@@ -15,7 +15,14 @@
       "Bash(pnpm run build:*)",
       "Bash(pnpm prisma generate:*)",
       "Bash(pnpm run dev:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(pnpm prisma db push:*)",
+      "Bash(docker port:*)",
+      "Bash(powershell:*)",
+      "Bash(docker exec:*)",
+      "Bash(docker stop:*)",
+      "Bash(docker rm:*)",
+      "Bash(docker run:*)"
     ]
   }
 }
