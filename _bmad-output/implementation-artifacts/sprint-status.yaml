@@ -44,7 +44,7 @@ development_status:
   # EPIC 1: Project Foundation & Authentication (7 stories)
   # ═══════════════════════════════════════════════════════════════════════════
   epic-1: in-progress
-  1-1-initialize-project-with-better-auth-starter-template: ready-for-dev
+  1-1-initialize-project-with-better-auth-starter-template: review
   1-2-configure-multi-tenant-database-schema-isolation: ready-for-dev
   1-3-implement-company-registration-with-email-password: ready-for-dev
   1-4-implement-oauth-google-authentication: ready-for-dev

@@ -1,6 +1,6 @@
 # Story 1.1: Initialize Project with Better Auth Starter Template
 
-Status: ready-for-dev
+Status: review
 
 ---
 
@@ -49,53 +49,53 @@ So that the foundation is set with Next.js 15+, Prisma, Better Auth, and shadcn/
 
 ## Tasks / Subtasks
 
-- [ ] **Task 1: Clone Better Auth Starter** (AC: #1)
-  - [ ] 1.1 Clone repository: `git clone https://github.com/devAaus/better-auth.git flottebox-mvp`
-  - [ ] 1.2 Navigate to project directory
-  - [ ] 1.3 Verify project structure matches expected layout
+- [x] **Task 1: Clone Better Auth Starter** (AC: #1)
+  - [x] 1.1 Clone repository: `git clone https://github.com/devAaus/better-auth.git flottebox-mvp`
+  - [x] 1.2 Navigate to project directory
+  - [x] 1.3 Verify project structure matches expected layout
 
-- [ ] **Task 2: Install Dependencies** (AC: #2)
-  - [ ] 2.1 Run `pnpm install`
-  - [ ] 2.2 Verify no errors during installation
-  - [ ] 2.3 Check `node_modules` is properly populated
+- [x] **Task 2: Install Dependencies** (AC: #2)
+  - [x] 2.1 Run `pnpm install`
+  - [x] 2.2 Verify no errors during installation
+  - [x] 2.3 Check `node_modules` is properly populated
 
-- [ ] **Task 3: Upgrade ALL Dependencies to Latest Versions (2026)** (AC: #1, #3)
-  - [ ] 3.1 Upgrade Next.js & React: `pnpm add next@16 react@19 react-dom@19`
-  - [ ] 3.2 Upgrade TypeScript: `pnpm add -D typescript@latest @types/react@latest @types/node@latest`
-  - [ ] 3.3 Upgrade TailwindCSS v4: `pnpm add tailwindcss@4 @tailwindcss/postcss` (Note: Tailwind v4 a une nouvelle config)
-  - [ ] 3.4 Upgrade Prisma: `pnpm add @prisma/client@latest prisma@latest`
-  - [ ] 3.5 Upgrade Better Auth: `pnpm add better-auth@latest`
-  - [ ] 3.6 Upgrade shadcn/ui components: `pnpm dlx shadcn@latest update`
-  - [ ] 3.7 Upgrade all other dependencies: `pnpm update --latest`
-  - [ ] 3.8 Fix any breaking changes from upgrades
-  - [ ] 3.9 Verify build still works after ALL upgrades
+- [x] **Task 3: Upgrade ALL Dependencies to Latest Versions (2026)** (AC: #1, #3)
+  - [x] 3.1 Upgrade Next.js & React: `pnpm add next@16 react@19 react-dom@19`
+  - [x] 3.2 Upgrade TypeScript: `pnpm add -D typescript@latest @types/react@latest @types/node@latest`
+  - [x] 3.3 Upgrade TailwindCSS v4: `pnpm add tailwindcss@4 @tailwindcss/postcss` (Note: Tailwind v4 a une nouvelle config)
+  - [x] 3.4 Upgrade Prisma: Prisma 6.19.2 (v7 nécessite migration de schema, reportée)
+  - [x] 3.5 Upgrade Better Auth: `pnpm add better-auth@latest`
+  - [x] 3.6 Upgrade shadcn/ui components: Composants déjà à jour dans le starter
+  - [x] 3.7 Upgrade all other dependencies: `pnpm update --latest`
+  - [x] 3.8 Fix any breaking changes from upgrades (framer-motion ajouté)
+  - [x] 3.9 Verify build still works after ALL upgrades
 
-- [ ] **Task 4: Configure Environment Variables** (AC: #4)
-  - [ ] 4.1 Copy `.env.example` to `.env`
-  - [ ] 4.2 Generate `BETTER_AUTH_SECRET` using secure method
-  - [ ] 4.3 Configure `DATABASE_URL` for OVH PostgreSQL (placeholder format for now)
-  - [ ] 4.4 Add `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` placeholders
-  - [ ] 4.5 Ensure `.env` is in `.gitignore`
+- [x] **Task 4: Configure Environment Variables** (AC: #4)
+  - [x] 4.1 Copy `.env.example` to `.env`
+  - [x] 4.2 Generate `BETTER_AUTH_SECRET` using secure method
+  - [x] 4.3 Configure `DATABASE_URL` for OVH PostgreSQL (placeholder format for now)
+  - [x] 4.4 Add `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` placeholders
+  - [x] 4.5 Ensure `.env` is in `.gitignore`
 
-- [ ] **Task 5: Initialize Prisma** (AC: #5, #6)
-  - [ ] 5.1 Run `pnpm prisma generate` successfully
-  - [ ] 5.2 Run `pnpm prisma db push` (with local or OVH PostgreSQL)
-  - [ ] 5.3 Verify Prisma Client types are generated
+- [x] **Task 5: Initialize Prisma** (AC: #5, #6)
+  - [x] 5.1 Run `pnpm prisma generate` successfully
+  - [ ] 5.2 Run `pnpm prisma db push` (REPORTÉ - pas de DB PostgreSQL configurée)
+  - [x] 5.3 Verify Prisma Client types are generated
 
-- [ ] **Task 6: Verify Build** (AC: #3)
-  - [ ] 6.1 Run `pnpm run build`
-  - [ ] 6.2 Ensure no TypeScript errors
-  - [ ] 6.3 Ensure no build warnings (or document acceptable ones)
+- [x] **Task 6: Verify Build** (AC: #3)
+  - [x] 6.1 Run `pnpm run build`
+  - [x] 6.2 Ensure no TypeScript errors
+  - [x] 6.3 Ensure no build warnings (or document acceptable ones)
 
-- [ ] **Task 7: Start Development Server** (AC: #7)
-  - [ ] 7.1 Run `pnpm run dev`
-  - [ ] 7.2 Verify server starts on `http://localhost:3000`
-  - [ ] 7.3 Verify basic pages load (login, register if present)
+- [x] **Task 7: Start Development Server** (AC: #7)
+  - [x] 7.1 Run `pnpm run dev`
+  - [x] 7.2 Verify server starts on `http://localhost:3000`
+  - [x] 7.3 Verify basic pages load (login, register if present)
 
-- [ ] **Task 8: Rename Project** (Housekeeping)
-  - [ ] 8.1 Update `package.json` name to "flottebox-mvp"
-  - [ ] 8.2 Update any other references to project name
-  - [ ] 8.3 Initialize new git repository for FlotteBox project
+- [x] **Task 8: Rename Project** (Housekeeping)
+  - [x] 8.1 Update `package.json` name to "flottebox-mvp"
+  - [x] 8.2 Update any other references to project name
+  - [x] 8.3 Initialize new git repository for FlotteBox project
 
 ---
 
@@ -296,16 +296,39 @@ Les tests automatises seront ajoutes dans les stories suivantes avec Vitest + Te
 
 ### Agent Model Used
 
-{{agent_model_name_version}}
+Claude Opus 4.5 (claude-opus-4-5-20251101)
 
 ### Debug Log References
 
-_A remplir pendant l'implementation_
+- Prisma 7 breaking change: nécessite migration vers `prisma.config.ts` - reporté à une story dédiée, utilisé Prisma 6.19.2
+- framer-motion manquant: ajouté comme dépendance pour les composants d'animation
 
 ### Completion Notes List
 
-_A remplir pendant l'implementation_
+- ✅ Projet cloné depuis Better Auth starter template (devAaus/better-auth)
+- ✅ pnpm installé globalement et dépendances installées
+- ✅ Versions mises à jour: Next.js 16.1.5, React 19.2.4, TypeScript 5.9.3, TailwindCSS 4.1.18
+- ✅ Prisma maintenu en v6.19.2 (v7 nécessite migration de config importante)
+- ✅ Better Auth 1.4.17, Zod 4.3.6
+- ✅ Variables d'environnement configurées (.env créé avec BETTER_AUTH_SECRET généré)
+- ✅ Build passe sans erreurs TypeScript
+- ✅ Serveur de développement démarre sur http://localhost:3000
+- ✅ Projet renommé en "flottebox-mvp", nouveau repo git initialisé
+- ⚠️ AC6 (prisma db push) reporté - pas de base PostgreSQL configurée
 
 ### File List
 
-_A remplir pendant l'implementation avec la liste des fichiers crees/modifies_
+**Nouveau projet créé:** `flottebox-mvp/`
+
+Fichiers clés:
+- `flottebox-mvp/package.json` - Renommé en "flottebox-mvp", dépendances mises à jour
+- `flottebox-mvp/.env` - Variables d'environnement configurées
+- `flottebox-mvp/prisma/schema.prisma` - Schéma Prisma Better Auth (User, Session, Account, Verification)
+- `flottebox-mvp/lib/auth.ts` - Configuration Better Auth
+- `flottebox-mvp/lib/prisma.ts` - Client Prisma singleton
+- `flottebox-mvp/app/` - Routes Next.js App Router (auth, dashboard, api)
+- `flottebox-mvp/components/` - Composants React + shadcn/ui
+
+### Change Log
+
+- 2026-01-27: Story 1.1 implémentée - Initialisation projet FlotteBox MVP depuis Better Auth starter

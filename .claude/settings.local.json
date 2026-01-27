@@ -3,7 +3,19 @@
     "allow": [
       "Bash(node:*)",
       "Bash(dir:*)",
-      "Bash(git -C \"c:\\\\Users\\\\Quentin\\\\Documents\\\\Projets\\\\laboiteagants_cahier des charges\" log --oneline)"
+      "Bash(git -C \"c:\\\\Users\\\\Quentin\\\\Documents\\\\Projets\\\\laboiteagants_cahier des charges\" log --oneline)",
+      "Bash(git clone:*)",
+      "Bash(robocopy:*)",
+      "Bash(xcopy:*)",
+      "Bash(pnpm install:*)",
+      "Bash(npm --version:*)",
+      "Bash(npm install:*)",
+      "Bash(pnpm add:*)",
+      "Bash(pnpm update:*)",
+      "Bash(pnpm run build:*)",
+      "Bash(pnpm prisma generate:*)",
+      "Bash(pnpm run dev:*)",
+      "Bash(curl:*)"
     ]
   }
 }
