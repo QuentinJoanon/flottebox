@@ -59,11 +59,16 @@ So that the foundation is set with Next.js 15+, Prisma, Better Auth, and shadcn/
   - [ ] 2.2 Verify no errors during installation
   - [ ] 2.3 Check `node_modules` is properly populated
 
-- [ ] **Task 3: Upgrade to Latest Versions (2026)** (AC: #1, #3)
-  - [ ] 3.1 Upgrade Next.js: `pnpm update next@16 react@19 react-dom@19 typescript@latest`
-  - [ ] 3.2 Upgrade Prisma: `pnpm update @prisma/client@latest prisma@latest`
-  - [ ] 3.3 Upgrade Better Auth: `pnpm update better-auth@latest`
-  - [ ] 3.4 Verify build still works after upgrades
+- [ ] **Task 3: Upgrade ALL Dependencies to Latest Versions (2026)** (AC: #1, #3)
+  - [ ] 3.1 Upgrade Next.js & React: `pnpm add next@16 react@19 react-dom@19`
+  - [ ] 3.2 Upgrade TypeScript: `pnpm add -D typescript@latest @types/react@latest @types/node@latest`
+  - [ ] 3.3 Upgrade TailwindCSS v4: `pnpm add tailwindcss@4 @tailwindcss/postcss` (Note: Tailwind v4 a une nouvelle config)
+  - [ ] 3.4 Upgrade Prisma: `pnpm add @prisma/client@latest prisma@latest`
+  - [ ] 3.5 Upgrade Better Auth: `pnpm add better-auth@latest`
+  - [ ] 3.6 Upgrade shadcn/ui components: `pnpm dlx shadcn@latest update`
+  - [ ] 3.7 Upgrade all other dependencies: `pnpm update --latest`
+  - [ ] 3.8 Fix any breaking changes from upgrades
+  - [ ] 3.9 Verify build still works after ALL upgrades
 
 - [ ] **Task 4: Configure Environment Variables** (AC: #4)
   - [ ] 4.1 Copy `.env.example` to `.env`
@@ -118,8 +123,14 @@ Cette story utilise le starter template Better Auth (devAaus) pour les raisons s
 - Next.js 16.x (App Router stable)
 - React 19.x (avec React Compiler)
 - TypeScript 5.7+
+- TailwindCSS 4.x (nouvelle architecture CSS-first)
 - Prisma 6.x
 - Better Auth latest
+- shadcn/ui latest
+
+> **IMPORTANT**: Le starter template sera probablement sur des versions anterieures.
+> Il est CRITIQUE de mettre a jour TOUTES les dependances vers les dernieres versions
+> avant de commencer le developpement pour eviter des problemes de compatibilite plus tard.
 
 ### Project Structure Reference
 
@@ -168,30 +179,72 @@ NEXT_PUBLIC_APP_URL="http://localhost:3000"
 git clone https://github.com/devAaus/better-auth.git flottebox-mvp
 cd flottebox-mvp
 
-# 2. Installer dependances
+# 2. Installer dependances initiales
 pnpm install
 
-# 3. Upgrade vers dernieres versions stables (2026)
-pnpm update next@16 react@19 react-dom@19 typescript@latest
-pnpm update @prisma/client@latest prisma@latest
-pnpm update better-auth@latest
+# ============================================================
+# 3. UPGRADE COMPLET VERS VERSIONS 2026 (CRITIQUE!)
+# ============================================================
+# Le starter est probablement sur des versions anterieures.
+# Mettre a jour TOUT avant de commencer le dev.
 
-# 4. Verifier build apres upgrades
+# 3a. Core framework
+pnpm add next@16 react@19 react-dom@19
+
+# 3b. TypeScript et types
+pnpm add -D typescript@latest @types/react@latest @types/node@latest
+
+# 3c. TailwindCSS v4 (nouvelle architecture!)
+pnpm add tailwindcss@4 @tailwindcss/postcss
+# Note: Tailwind v4 utilise CSS-first config, peut necessiter migration
+# Voir: https://tailwindcss.com/docs/upgrade-guide
+
+# 3d. Prisma
+pnpm add @prisma/client@latest
+pnpm add -D prisma@latest
+
+# 3e. Better Auth
+pnpm add better-auth@latest
+
+# 3f. shadcn/ui (mettre a jour les composants existants)
+pnpm dlx shadcn@latest update
+
+# 3g. Toutes les autres dependances
+pnpm update --latest
+
+# 3h. Verifier et fixer les breaking changes
 pnpm run build
+# Si erreurs, consulter les changelogs et fixer
 
-# 5. Configuration initiale
+# ============================================================
+# 4. Configuration initiale
+# ============================================================
 cp .env.example .env
 # Configurer DATABASE_URL avec OVH PostgreSQL
 # Configurer BETTER_AUTH_SECRET
 # Configurer GOOGLE_CLIENT_ID + GOOGLE_CLIENT_SECRET
 
-# 6. Initialiser Prisma
+# 5. Initialiser Prisma
 pnpm prisma generate
 pnpm prisma db push
 
-# 7. Demarrer le serveur de developpement
+# 6. Demarrer le serveur de developpement
 pnpm run dev
 ```
+
+### Notes sur TailwindCSS v4
+
+TailwindCSS v4 introduit des changements majeurs:
+- **CSS-first configuration**: Plus de `tailwind.config.js`, config dans CSS
+- **Nouvelle syntaxe**: `@import "tailwindcss"` au lieu de `@tailwind base/components/utilities`
+- **PostCSS simplifie**: Utilise `@tailwindcss/postcss`
+
+Si le starter utilise Tailwind v3, il faudra peut-etre:
+1. Migrer la config vers le nouveau format CSS
+2. Mettre a jour les imports dans `globals.css`
+3. Verifier que shadcn/ui est compatible
+
+Consulter le guide de migration officiel si necessaire.
 
 ### Critical Technical Constraints
 
